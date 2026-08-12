@@ -48,6 +48,7 @@ Django 6.0 · Bootstrap 5.3 · Font Awesome 6.5 · SortableJS · Django Unfold �
 
 ---
 
+
 ## 💬 Обратная связь
 
 Нашли баг или есть идея? [Создайте issue](https://github.com/AppleMen77/To-Do-list/issues)
