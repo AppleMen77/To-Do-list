@@ -290,7 +290,7 @@ def update_order(request):
 
 @login_required
 @ratelimit(key='user', rate='5/m', block=True)
-def quick_add(request)
+def quick_add(request):
     form = QuickAddForm(request.POST)
     if form.is_valid():
         item = form.save(commit=False)
