@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load task_tags %}
+
+{% block content %}
+
+<!-- Рабочие области -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="d-flex flex-wrap gap-1 align-items-center">
+            <a href="?workspace=" class="btn btn-sm {% if not current_workspace %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="fa-solid fa-globe me-1"></i>Всё
+            </a>
+            {% for ws in workspaces %}
+            <a href="?workspace={{ ws.id }}" class="btn btn-sm {% if current_workspace.id == ws.id %}btn-primary{% else %}btn-outline-secondary{% endif %}" style="border-color: {{ ws.color }}; color: {{ ws.color }};">
+                {{ ws.name }}
+            </a>
+            {% endfor %}
+            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addWorkspaceModal">
+                <i class="fa-solid fa-plus me-1"></i>Область
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Умные списки -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="d-flex flex-wrap gap-1">
+            <a href="?smart=today{% if current_workspace %}&workspace={{ current_workspace.id }}{% endif %}" class="btn btn-sm {% if smart_filter == 'today' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="fa-solid fa-calendar-day me-1"></i>Сегодня
+            </a>
+            <a href="?smart=week{% if current_workspace %}&workspace={{ current_workspace.id }}{% endif %}" class="btn btn-sm {% if smart_filter == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="fa-solid fa-calendar-week me-1"></i>На неделе
+            </a>
+            <a href="?smart=no_deadline{% if current_workspace %}&workspace={{ current_workspace.id }}{% endif %}" class="btn btn-sm {% if smart_filter == 'no_deadline' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="fa-solid fa-calendar-xmark me-1"></i>Без срока
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Прогресс-бар -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <small class="text-muted"><i class="fa-solid fa-chart-line me-1"></i>Прогресс</small>
+            <small class="text-muted fw-bold">{{ counts.completed }}/{{ counts.all }}</small>
+        </div>
+        <div class="progress" style="height: 8px; border-radius: 10px;">
+            <div class="progress-bar" style="width: {{ progress }}%; border-radius: 10px; transition: width 0.5s ease;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Фильтры -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="d-flex flex-wrap gap-1 align-items-center">
+            <a href="?filter=all{% if current_workspace %}&workspace={{ current_workspace.id }}{% endif %}{% if tag_filter %}&tag={{ tag_filter }}{% endif %}{% if smart_filter %}&smart={{ smart_filter }}{% endif %}" class="btn btn-sm {% if current_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">Все ({{ counts.all }})</a>
+            <a href="?filter=active{% if current_workspace %}&workspace={{ current_workspace.id }}{% endif %}{% if tag_filter %}&tag={{ tag_filter }}{% endif %}{% if smart_filter %}&smart={{ smart_filter }}{% endif %}" class="btn btn-sm {% if current_filter == 'active' %}btn-primary{% else %}btn-outline-primary{% endif %}">Активные ({{ counts.active }})</a>
+            <a href="?filter=completed{% if current_workspace %}&workspace={{ current_workspace.id }}{% endif %}{% if tag_filter %}&tag={{ tag_filter }}{% endif %}{% if smart_filter %}&smart={{ smart_filter }}{% endif %}" class="btn btn-sm {% if current_filter == 'completed' %}btn-primary{% else %}btn-outline-primary{% endif %}">Завершённые ({{ counts.completed }})</a>
+            <a href="?filter=overdue{% if current_workspace %}&workspace={{ current_workspace.id }}{% endif %}{% if tag_filter %}&tag={{ tag_filter }}{% endif %}{% if smart_filter %}&smart={{ smart_filter }}{% endif %}" class="btn btn-sm {% if current_filter == 'overdue' %}btn-danger{% else %}btn-outline-danger{% endif %}">Просроченные ({{ counts.overdue }})</a>
+            {% for tag in tags %}
+            <a href="?filter={{ current_filter }}{% if current_workspace %}&workspace={{ current_workspace.id }}{% endif %}&tag={{ tag.id }}" class="btn btn-sm {% if tag_filter == tag.id|stringformat:'s' %}btn-primary{% else %}btn-outline-secondary{% endif %}" style="border-color: {{ tag.color }}; color: {{ tag.color }};">
+                <i class="fa-solid fa-tag me-1"></i>{{ tag.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Поиск и кнопки -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <form method="get" class="d-flex">
+                    {% if current_workspace %}<input type="hidden" name="workspace" value="{{ current_workspace.id }}">{% endif %}
+                    <input type="hidden" name="filter" value="{{ current_filter }}">
+                    {% if tag_filter %}<input type="hidden" name="tag" value="{{ tag_filter }}">{% endif %}
+                    {% if smart_filter %}<input type="hidden" name="smart" value="{{ smart_filter }}">{% endif %}
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Поиск..." value="{{ search_query }}">
+                    <button class="btn btn-sm btn-outline-secondary ms-1">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select form-select-sm" onchange="location.href='?{% if current_workspace %}workspace={{ current_workspace.id }}&{% endif %}filter={{ current_filter }}&sort='+this.value+'{% if search_query %}&search={{ search_query }}{% endif %}{% if tag_filter %}&tag={{ tag_filter }}{% endif %}{% if smart_filter %}&smart={{ smart_filter }}{% endif %}'">
+                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Новые</option>
+                    <option value="deadline" {% if current_sort == 'deadline' %}selected{% endif %}>По сроку</option>
+                    <option value="-priority" {% if current_sort == '-priority' %}selected{% endif %}>Приоритет</option>
+                </select>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                    <i class="fa-solid fa-plus me-1"></i>Задача
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addListModal">
+                    <i class="fa-solid fa-folder-plus me-1"></i>Список
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addTagModal">
+                    <i class="fa-solid fa-tag me-1"></i>Метка
+                </button>
+                <a href="{% url 'calendar_view' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa-solid fa-calendar me-1"></i>Календарь
+                </a>
+                <form method="post" action="{% url 'clear_completed' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                        <i class="fa-solid fa-broom me-1"></i>Очистить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Быстрое добавление -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form id="quick-add-form" class="d-flex gap-2">
+            {% csrf_token %}
+            <input type="text" name="title" class="form-control form-control-sm" placeholder="Быстрое добавление..." required>
+            <select name="priority" class="form-select form-select-sm" style="width:130px">
+                <option value="2">Средний</option>
+                <option value="3">Высокий</option>
+                <option value="1">Низкий</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary"><i class="fa-solid fa-plus"></i></button>
+        </form>
+    </div>
+</div>
+
+<!-- Список задач -->
+<div class="list-group sortable-list" id="sortable-list">
+    {% for item in items %}
+    <div class="list-group-item task-item status-{{ item.status_class }} {% if item.is_pinned %}pinned{% endif %} {% if view_mode == 'compact' %}compact{% endif %}"
+         data-id="{{ item.id }}" id="item-{{ item.id }}"
+         {% if item.is_blocked %}style="opacity: 0.6;" title="Заблокирована: зависит от «{{ item.depends_on.title }}»"{% endif %}>
+        
+        <div class="d-flex align-items-start gap-2">
+            <!-- Индикатор блокировки -->
+            {% if item.is_blocked %}
+            <i class="fa-solid fa-lock text-muted mt-1" title="Заблокирована"></i>
+            {% else %}
+            <input type="checkbox" class="form-check-input toggle-complete mt-1" data-id="{{ item.id }}" {% if item.completed %}checked{% endif %}>
+            {% endif %}
+
+            <div class="flex-grow-1 {% if view_mode == 'compact' %}compact-content{% endif %}">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    {% if item.is_pinned %}<i class="fa-solid fa-thumbtack text-warning" title="Закреплена"></i>{% endif %}
+                    <span class="task-title {% if item.completed %}text-decoration-line-through text-muted{% endif %}">{{ item.title }}</span>
+                    <span class="badge {{ item.status_class|status_badge_class }}">
+                        {% if item.completed %}<i class="fa-solid fa-check me-1"></i>Выполнена
+                        {% elif item.is_overdue %}<i class="fa-solid fa-exclamation me-1"></i>Просрочена
+                        {% elif item.is_blocked %}<i class="fa-solid fa-lock me-1"></i>Заблокирована
+                        {% else %}{{ item.get_priority_display }}
+                        {% endif %}
+                    </span>
+                    {% for tag in item.tags.all %}
+                    <span class="badge" style="background: {{ tag.color }}; font-size: 0.7rem;">
+                        <i class="fa-solid fa-tag me-1"></i>{{ tag.name }}
+                    </span>
+                    {% endfor %}
+                    {% if item.estimated_minutes %}
+                    <span class="badge bg-secondary"><i class="fa-solid fa-clock me-1"></i>{{ item.estimated_minutes }} мин</span>
+                    {% endif %}
+                </div>
+
+                {% if view_mode != 'compact' %}
+                <div class="d-flex gap-3 mt-1 flex-wrap">
+                    {% if item.deadline %}<small class="text-muted"><i class="fa-solid fa-calendar me-1"></i>{{ item.deadline|date:"d.m.Y H:i" }}</small>{% endif %}
+                    {% if item.todo_list %}<small class="text-muted"><i class="fa-solid fa-folder me-1"></i>{{ item.todo_list.name }}</small>{% endif %}
+                    {% if item.assigned_to %}<small class="text-muted"><i class="fa-solid fa-user-check me-1"></i>{{ item.assigned_to.username }}</small>{% endif %}
+                    <small class="text-muted"><i class="fa-solid fa-clock me-1"></i>{{ item.created_at|date:"d.m.Y" }}</small>
+                </div>
+
+                <!-- Подзадачи -->
+                {% if item.subtasks.all %}
+                <div class="mt-2">
+                    <small class="text-muted"><i class="fa-solid fa-list-check me-1"></i>Подзадачи {% if item.subtask_progress %}({{ item.subtask_progress }}){% endif %}</small>
+                    <div style="height: 3px; background: #e9ecef; border-radius: 3px; margin-top: 2px;">
+                        <div style="height: 3px; width: {% widthratio item.subtasks.completed.count item.subtasks.count 100 %}%; background: #34d399; border-radius: 3px; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Форма добавления подзадачи -->
+                <form method="post" action="{% url 'subtask_add' item.id %}" class="d-flex gap-1 mt-2 subtask-form">
+                    {% csrf_token %}
+                    <input type="text" name="title" class="form-control form-control-sm" placeholder="+ Подзадача" style="font-size: 0.8rem;">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary" style="font-size: 0.75rem;"><i class="fa-solid fa-plus"></i></button>
+                </form>
+
+                <!-- Список подзадач -->
+                {% for sub in item.subtasks.all %}
+                <div class="d-flex align-items-center gap-1 mt-1 ms-3">
+                    <input type="checkbox" class="form-check-input subtask-toggle" data-id="{{ sub.id }}" {% if sub.completed %}checked{% endif %} style="width: 16px; height: 16px;">
+                    <small class="{% if sub.completed %}text-decoration-line-through text-muted{% endif %}">{{ sub.title }}</small>
+                    <form method="post" action="{% url 'subtask_delete' sub.id %}" class="d-inline ms-auto">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm text-danger p-0" style="font-size: 0.7rem;"><i class="fa-solid fa-xmark"></i></button>
+                    </form>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis"></i></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'item_edit' item.id %}"><i class="fa-solid fa-pen-to-square me-2"></i>Редактировать</a></li>
+                    <li><a class="dropdown-item" href="{% url 'pomodoro_view' item.id %}"><i class="fa-solid fa-clock me-2"></i>Pomodoro</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="post" action="{% url 'item_delete' item.id %}" class="d-inline delete-form">
+                            {% csrf_token %}
+                            <button type="button" class="dropdown-item text-danger delete-single"><i class="fa-solid fa-trash me-2"></i>Удалить</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-5">
+        <i class="fa-solid fa-clipboard-list mb-3" style="font-size: 3rem; color: var(--text-muted); opacity: 0.3;"></i>
+        <p class="text-muted mb-2">Список задач пуст</p>
+        <p class="text-muted small">Нажмите "+ Задача" или используйте быстрое добавление</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Модалки -->
+{% include 'tasks/modals.html' %}
+
+{% endblock %}

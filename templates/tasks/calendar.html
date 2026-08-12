@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load task_tags %}
+
+{% block content %}
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-chevron-left"></i></a>
+            <h5 class="mb-0">{{ month_name }} {{ year }}</h5>
+            <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered bg-white rounded-3 overflow-hidden">
+    <thead>
+        <tr>
+            <th class="text-center">Пн</th><th class="text-center">Вт</th><th class="text-center">Ср</th>
+            <th class="text-center">Чт</th><th class="text-center">Пт</th><th class="text-center">Сб</th><th class="text-center">Вс</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for week in calendar %}
+        <tr>
+            {% for day in week %}
+            <td class="text-center {% if day == 0 %}text-muted{% endif %}" style="height: 100px; width: 14.2%;">
+                {% if day != 0 %}
+                <strong>{{ day }}</strong>
+                <div class="mt-1">
+                    {% for task in tasks_by_day|get_item:day %}
+                    <small class="d-block text-truncate" style="font-size: 0.7rem; background: #e8ecf1; border-radius: 4px; padding: 2px 4px; margin-bottom: 2px;"
+                          title="{{ task.title }}">
+                        {% if task.completed %}<s>{{ task.title|truncatechars:15 }}</s>{% else %}{{ task.title|truncatechars:15 }}{% endif %}
+                    </small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

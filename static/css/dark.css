@@ -1,0 +1,239 @@
+/* ===== Тёмная тема: Stone + Zinc ===== */
+
+body {
+    background: #292524 !important;
+    color: #e7e5e4 !important;
+}
+
+/* Навигация */
+.navbar {
+    background: linear-gradient(135deg, #44403c 0%, #292524 100%) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Карточки */
+.card {
+    background: #44403c !important;
+    border-color: #57534e !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Задачи */
+.task-item {
+    background: #44403c !important;
+    border-color: #57534e !important;
+    color: #e7e5e4 !important;
+}
+
+.task-item:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.status-completed {
+    background: #3b4440 !important;
+    border-left-color: #34d399 !important;
+}
+
+.status-overdue {
+    background: #4a3535 !important;
+    border-left-color: #f43f5e !important;
+}
+
+.status-high-priority { border-left-color: #d97706 !important; }
+.status-medium-priority { border-left-color: #78716c !important; }
+.status-low-priority { border-left-color: #a8a29e !important; }
+
+/* Текст */
+.text-muted { color: #a8a29e !important; }
+
+.task-title {
+    color: #e7e5e4 !important;
+}
+
+.text-decoration-line-through {
+    color: #78716c !important;
+}
+
+/* Поля ввода */
+.form-control, .form-select {
+    background: #57534e !important;
+    border-color: #78716c !important;
+    color: #e7e5e4 !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background: #78716c !important;
+    border-color: #d97706 !important;
+    box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.15) !important;
+}
+
+.form-control::placeholder {
+    color: #a8a29e !important;
+}
+
+/* Кнопки */
+.btn-outline-primary {
+    border-color: #78716c !important;
+    color: #e7e5e4 !important;
+}
+
+.btn-outline-primary:hover {
+    background: #78716c !important;
+    color: #fff !important;
+}
+
+.btn-outline-secondary {
+    border-color: #57534e !important;
+    color: #a8a29e !important;
+}
+
+.btn-outline-secondary:hover {
+    background: #57534e !important;
+    color: #e7e5e4 !important;
+}
+
+.btn-outline-danger {
+    border-color: #f43f5e !important;
+    color: #f43f5e !important;
+}
+
+.btn-outline-danger:hover {
+    background: #f43f5e !important;
+    color: #fff !important;
+}
+
+.btn-outline-success {
+    border-color: #34d399 !important;
+    color: #34d399 !important;
+}
+
+.btn-outline-success:hover {
+    background: #34d399 !important;
+    color: #fff !important;
+}
+
+.btn-outline-warning {
+    border-color: #d97706 !important;
+    color: #d97706 !important;
+}
+
+.btn-outline-warning:hover {
+    background: #d97706 !important;
+    color: #fff !important;
+}
+
+/* Дропдаун */
+.dropdown-menu {
+    background: #44403c !important;
+    border-color: #57534e !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dropdown-item {
+    color: #e7e5e4 !important;
+}
+
+.dropdown-item:hover {
+    background: #57534e !important;
+}
+
+.dropdown-item.text-danger {
+    color: #f43f5e !important;
+}
+
+.dropdown-item.text-danger:hover {
+    background: #4a3535 !important;
+}
+
+/* Модальные окна */
+.modal-content {
+    background: #44403c !important;
+    color: #e7e5e4 !important;
+    border-color: #57534e !important;
+}
+
+.modal-header {
+    border-bottom-color: #57534e !important;
+}
+
+.modal-footer {
+    border-top-color: #57534e !important;
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Прогресс-бар */
+.progress {
+    background: #57534e !important;
+}
+
+/* Drag & Drop */
+.sortable-ghost {
+    background: #57534e !important;
+    border-color: #d97706 !important;
+}
+
+.sortable-chosen {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Чекбоксы */
+.form-check-input {
+    background-color: #57534e !important;
+    border-color: #78716c !important;
+}
+
+.form-check-input:checked {
+    background: linear-gradient(135deg, #78716c 0%, #57534e 100%) !important;
+    border-color: #78716c !important;
+}
+
+/* Бейджи */
+.bg-success { background: #34d399 !important; color: #1a1a1a !important; }
+.bg-danger { background: #f43f5e !important; color: #fff !important; }
+.bg-warning { background: #d97706 !important; color: #1a1a1a !important; }
+.bg-info { background: #78716c !important; color: #fff !important; }
+.bg-secondary { background: #a8a29e !important; color: #1a1a1a !important; }
+
+/* Список (list-group) */
+.list-group-item {
+    background: #44403c !important;
+    border-color: #57534e !important;
+    color: #e7e5e4 !important;
+}
+
+/* Скроллбар */
+::-webkit-scrollbar-track { background: #292524 !important; }
+::-webkit-scrollbar-thumb { background: #57534e !important; }
+::-webkit-scrollbar-thumb:hover { background: #78716c !important; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .task-item {
+        background: #44403c !important;
+    }
+    
+    .form-control, .form-select {
+        background: #57534e !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .card {
+        background: #44403c !important;
+    }
+    
+    .dropdown-menu {
+        background: #44403c !important;
+    }
+    
+    .modal-content {
+        background: #44403c !important;
+    }
+}

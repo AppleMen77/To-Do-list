@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row g-3">
+    <!-- Профиль -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-user-circle mb-2" style="font-size: 3rem; color: var(--primary);"></i>
+                <h5>{{ user.username }}</h5>
+                <p class="text-muted">Уровень {{ profile.level }}</p>
+                <div class="progress mb-2" style="height: 10px; border-radius: 10px;">
+                    <div class="progress-bar" style="width: {{ profile.xp|divisibleby:100|yesno:'100,0' }}%;"></div>
+                </div>
+                <small class="text-muted">{{ profile.xp }} XP</small>
+                <hr>
+                <div class="d-flex justify-content-around">
+                    <div><i class="fa-solid fa-fire text-warning"></i> {{ profile.streak }} дней</div>
+                    <div><i class="fa-solid fa-trophy text-success"></i> {{ achievements|length }} достижений</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Достижения -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6><i class="fa-solid fa-medal me-2"></i>Достижения</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for a in achievements %}
+                    <span class="badge bg-success" title="{{ a.description }}">
+                        <i class="{{ a.icon }} me-1"></i>{{ a.name }}
+                    </span>
+                    {% empty %}
+                    <small class="text-muted">Пока нет достижений</small>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="col-md-8">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h2>{{ total_items }}</h2>
+                        <small class="text-muted">Всего задач</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h2 class="text-success">{{ completed_items }}</h2>
+                        <small class="text-muted">Выполнено</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h2 class="text-danger">{{ overdue_items }}</h2>
+                        <small class="text-muted">Просрочено</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- График -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6><i class="fa-solid fa-chart-bar me-2"></i>Выполнено за 7 дней</h6>
+                <div class="d-flex align-items-end gap-2" style="height: 150px;">
+                    {% for s in stats %}
+                    <div class="flex-fill text-center">
+                        <div style="height: {% widthratio s.count 5 100 %}px; background: var(--gradient); border-radius: 6px 6px 0 0; transition: height 0.5s; max-height: 140px;"></div>
+                        <small class="text-muted">{{ s.day }}</small>
+                        <br><small class="fw-bold">{{ s.count }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
